@@ -11,9 +11,12 @@ import com.pm.patient_service.dto.PatientRequestDTO;
 import com.pm.patient_service.dto.PatientResponseDTO;
 import com.pm.patient_service.exception.EmailAlreadyExistException;
 import com.pm.patient_service.exception.PatientNotFoundException;
+import com.pm.patient_service.grpc.BillingServiceGrpcClient;
 import com.pm.patient_service.mapping.MappingDTOs;
 import com.pm.patient_service.model.Patient;
 import com.pm.patient_service.repository.PatientRepository;
+
+
 
 @Service
 public class PatientService {
@@ -22,6 +25,9 @@ public class PatientService {
 
 	@Autowired
 	private MappingDTOs mapDtos;
+	
+	@Autowired
+	private BillingServiceGrpcClient billingServiceGrpcClient; 
 
 	public List<PatientResponseDTO> getAllPatients() {
 		List<Patient> patients = patientRepository.findAll();
@@ -36,6 +42,7 @@ public class PatientService {
 	    Patient converttomode = mapDtos.converttomode(dto); 
 	    Patient save = patientRepository.save(converttomode);
 	    PatientResponseDTO convertIntoDto = mapDtos.convertIntoDto(save); 
+	    billingServiceGrpcClient.createBillingAccount(save.getId().toString(), save.getName(), save.getRegisterationDate().toString()); 
 		return convertIntoDto;
 	}
 	
