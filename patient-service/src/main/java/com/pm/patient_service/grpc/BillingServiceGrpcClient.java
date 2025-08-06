@@ -7,6 +7,7 @@ import billing.BillingRequest;
 import billing.BillingRequestDelete;
 import billing.BillingResponse;
 import billing.BillingServiceGrpc;
+import billing.isExistResponse;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -34,6 +35,11 @@ public class BillingServiceGrpcClient {
 		BillingRequestDelete request = BillingRequestDelete.newBuilder().setPatientID(patientId).build(); 
 		BillingResponse response = billingServiceBlockingStub.deleteBillingAccount(request);
 		System.out.println("Deleted Confirmation response from billing service vai GRPC " + response);
+		return response;
+	}
+	
+	public isExistResponse isBillingExistForPatientID(BillingRequestDelete request) {
+		isExistResponse response = billingServiceBlockingStub.isBillingExistForPatientID(request);
 		return response;
 	}
 }

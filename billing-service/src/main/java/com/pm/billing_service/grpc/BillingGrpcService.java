@@ -3,11 +3,13 @@ package com.pm.billing_service.grpc;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.pm.billing_service.model.Billing;
+import com.pm.billing_service.repository.BillingRepository;
 import com.pm.billing_service.service.BillingService;
 
 import billing.BillingRequest;
 import billing.BillingRequestDelete;
 import billing.BillingResponse;
+import billing.isExistResponse;
 import billing.BillingServiceGrpc.BillingServiceImplBase;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -17,6 +19,9 @@ public class BillingGrpcService extends BillingServiceImplBase {
 
 	@Autowired
 	private BillingService billingService;
+	
+	@Autowired
+	private BillingRepository billingRepository; 
 
 	@Override
 	public void createBillingAccount(BillingRequest billingRequest, StreamObserver<BillingResponse> responseObserver) {
@@ -28,6 +33,16 @@ public class BillingGrpcService extends BillingServiceImplBase {
 
 		responseObserver.onNext(billingResponse);
 		responseObserver.onCompleted();
+	}
+	
+	@Override
+	public void isBillingExistForPatientID(BillingRequestDelete request,
+			StreamObserver<isExistResponse> responseObserver) {
+		// it will check if the billing  is there for the patient id 
+		boolean existsByPatientID = billingRepository.existsByPatientID(request.getPatientID());
+		isExistResponse response = isExistResponse.newBuilder().setIsExist(existsByPatientID).build();
+		responseObserver.onNext(response);
+		responseObserver.onCompleted();	
 	}
 
 	@Override

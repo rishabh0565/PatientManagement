@@ -56,4 +56,10 @@ public class PatientController {
 		String deletePatient = patientService.deletePatient(id);
 		return ResponseEntity.ok().body(deletePatient); 
 	}
+	
+	@DeleteMapping("/delete/all")
+	private ResponseEntity<String> deleteAllPatient(){
+		String deletePatient = patientService.deleteAllPatient();
+		return ResponseEntity.ok().body(deletePatient); 
+	}
 }

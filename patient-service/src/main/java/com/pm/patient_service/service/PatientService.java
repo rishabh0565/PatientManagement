@@ -17,6 +17,7 @@ import com.pm.patient_service.mapping.MappingDTOs;
 import com.pm.patient_service.model.Patient;
 import com.pm.patient_service.repository.PatientRepository;
 
+import billing.BillingRequestDelete;
 import billing.BillingResponse;
 
 @Service
@@ -73,10 +74,23 @@ public class PatientService {
 		if (!patientRepository.existsById(id)) {
 			return "" + id + "-> does not exist";
 		}
-		BillingResponse deleteBillingAccount = billingServiceGrpcClient.deleteBillingAccount(id.toString());
+		BillingRequestDelete request = BillingRequestDelete.newBuilder().setPatientID(id.toString()).build();
+		if (billingServiceGrpcClient.isBillingExistForPatientID(request).getIsExist()) {
+			BillingResponse deleteBillingAccount = billingServiceGrpcClient.deleteBillingAccount(id.toString());
+			patientRepository.deleteById(id);
+			return "deleted sucessfully and billing account details are " + deleteBillingAccount;
+		}
 		patientRepository.deleteById(id);
-		return "deleted sucessfully and billing account details are " + deleteBillingAccount;
+		return "Patient is deleted, Billing is not present for patient id -> " + id.toString();
 
+	}
+
+	public String deleteAllPatient() {
+		    List<PatientResponseDTO> allPatients = getAllPatients();
+		    for(PatientResponseDTO dto : allPatients) {
+		        deletePatient(UUID.fromString( dto.getId()));  
+		    }
+		return "Deleted All Patients"; 
 	}
 
 }
