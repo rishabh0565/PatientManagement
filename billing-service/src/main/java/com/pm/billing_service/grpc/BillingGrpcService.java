@@ -6,6 +6,7 @@ import com.pm.billing_service.model.Billing;
 import com.pm.billing_service.service.BillingService;
 
 import billing.BillingRequest;
+import billing.BillingRequestDelete;
 import billing.BillingResponse;
 import billing.BillingServiceGrpc.BillingServiceImplBase;
 import io.grpc.stub.StreamObserver;
@@ -27,5 +28,19 @@ public class BillingGrpcService extends BillingServiceImplBase {
 
 		responseObserver.onNext(billingResponse);
 		responseObserver.onCompleted();
+	}
+
+	@Override
+	public void deleteBillingAccount(BillingRequestDelete request, StreamObserver<BillingResponse> responseObserver) {
+		// it will delete the billing detail of respective patient
+		Billing billDetailsForPatientId = billingService.findBillDetailsForPatientId(request.getPatientID());
+		billingService.deleteBillingEntry(request);
+		BillingResponse billingResponse = BillingResponse.newBuilder().setAccountID(billDetailsForPatientId.getAccountID().toString())
+				.setPatientName(billDetailsForPatientId.getPatientName())
+				.setStatus("Billing Account is deleted For this Patient -> " + billDetailsForPatientId.getPatientName())
+				.build();
+		
+		responseObserver.onNext(billingResponse);
+		responseObserver.onCompleted(); 
 	}
 }

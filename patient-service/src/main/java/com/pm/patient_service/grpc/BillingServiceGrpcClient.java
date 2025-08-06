@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import billing.BillingRequest;
+import billing.BillingRequestDelete;
 import billing.BillingResponse;
 import billing.BillingServiceGrpc;
 import io.grpc.ManagedChannel;
@@ -26,6 +27,13 @@ public class BillingServiceGrpcClient {
 				.build();
 		BillingResponse response = billingServiceBlockingStub.createBillingAccount(request);
 		System.out.println("Receiveed response from billing service vai GRPC " + response);
+		return response;
+	}
+	
+	public BillingResponse deleteBillingAccount(String patientId) {
+		BillingRequestDelete request = BillingRequestDelete.newBuilder().setPatientID(patientId).build(); 
+		BillingResponse response = billingServiceBlockingStub.deleteBillingAccount(request);
+		System.out.println("Deleted Confirmation response from billing service vai GRPC " + response);
 		return response;
 	}
 }

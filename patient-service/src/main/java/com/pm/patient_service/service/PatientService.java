@@ -16,6 +16,8 @@ import com.pm.patient_service.mapping.MappingDTOs;
 import com.pm.patient_service.model.Patient;
 import com.pm.patient_service.repository.PatientRepository;
 
+import billing.BillingResponse;
+
 
 
 @Service
@@ -66,8 +68,9 @@ public class PatientService {
 		if(!patientRepository.existsById(id)) {
 			return ""+id+ "-> does not exist"; 
 		}
+		BillingResponse deleteBillingAccount = billingServiceGrpcClient.deleteBillingAccount(id.toString()); 
 		patientRepository.deleteById(id);
-		return "deleted sucessfully"; 
+		return "deleted sucessfully and billing account details are " + deleteBillingAccount; 
 		
 	}
 
