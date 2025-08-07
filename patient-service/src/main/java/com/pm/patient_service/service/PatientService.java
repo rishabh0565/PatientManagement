@@ -77,6 +77,7 @@ public class PatientService {
 		BillingRequestDelete request = BillingRequestDelete.newBuilder().setPatientID(id.toString()).build();
 		if (billingServiceGrpcClient.isBillingExistForPatientID(request).getIsExist()) {
 			BillingResponse deleteBillingAccount = billingServiceGrpcClient.deleteBillingAccount(id.toString());
+			kafkaProducer.sendEventToBillingAndAnalyticsWhenSomethingIsDeleted(deleteBillingAccount, patientRepository.findById(id).get());
 			patientRepository.deleteById(id);
 			return "deleted sucessfully and billing account details are " + deleteBillingAccount;
 		}
